@@ -1,0 +1,11 @@
+#include <stdio.h>
+
+int main() {
+    char c;
+    printf("Enter expression: ");
+    while ((c = getchar()) != '\n') {
+        if (c == '+' || c == '-' || c == '*' || c == '/')
+            printf("Operator: %c\n", c);
+    }
+    return 0;
+}
