@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char line[100];
+
+    printf("Enter a line: ");
+    fgets(line, sizeof(line), stdin);
+
+    if (line[0] == '/' && line[1] == '/') {
+        printf("It's a single-line comment.\n");
+    } else if (line[0] == '/' && line[1] == '*') {
+        int len = strlen(line);
+        if (len >= 4 && line[len - 3] == '*' && line[len - 2] == '/') {
+            printf("It's a multi-line comment.\n");
+        } else {
+            printf("It looks like the start of a multi-line comment.\n");
+        }
+    } else {
+        printf("Not a comment.\n");
+    }
+
+    return 0;
+}
