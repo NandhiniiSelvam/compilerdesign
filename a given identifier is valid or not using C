@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int isKeyword(const char *s) {
+    const char *keywords[] = {"int","float","char","if","else","for","while","return","void"};
+    for (int i = 0; i < 9; i++)
+        if (strcmp(s, keywords[i]) == 0) return 1;
+    return 0;
+}
+
+int main() {
+    char id[100];
+    int valid = 1;
+
+    printf("Enter identifier: ");
+    scanf("%s", id);
+
+    if (!isalpha(id[0]) && id[0] != '_')
+        valid = 0;
+    else {
+        for (int i = 1; id[i]; i++) {
+            if (!isalnum(id[i]) && id[i] != '_') {
+                valid = 0;
+                break;
+            }
+        }
+    }
+
+    if (isKeyword(id))
+        valid = 0;
+
+    printf(valid ? "Valid Identifier\n" : "Invalid Identifier\n");
+    return 0;
+}
