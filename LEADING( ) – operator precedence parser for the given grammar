@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 10
+
+char grammar[MAX][20];
+char leading[MAX][MAX];
+int n;
+
+int isNonTerminal(char symbol) {
+    return isupper(symbol);
+}
+
+void findLeading(int i, char symbol) {
+    for (int j = 0; j < n; j++) {
+        if (grammar[j][0] == symbol) {
+            if (!isNonTerminal(grammar[j][2])) {
+                strncat(leading[i], &grammar[j][2], 1);
+            } else {
+                findLeading(i, grammar[j][2]);
+            }
+        }
+    }
+}
+
+int main() {
+    printf("Enter number of productions: ");
+    scanf("%d", &n);
+    getchar(); // to clear newline
+
+    printf("Enter productions (e.g., E->E+T):\n");
+    for (int i = 0; i < n; i++) {
+        fgets(grammar[i], sizeof(grammar[i]), stdin);
+        grammar[i][strcspn(grammar[i], "\n")] = 0; // remove newline
+    }
+
+    for (int i = 0; i < n; i++) {
+        leading[i][0] = '\0';
+        char head = grammar[i][0];
+
+        if (!isNonTerminal(grammar[i][3])) {
+            strncat(leading[i], &grammar[i][3], 1);
+        } else {
+            findLeading(i, grammar[i][3]);
+        }
+    }
+
+    printf("\nLEADING Sets:\n");
+    for (int i = 0; i < n; i++) {
+        printf("LEADING(%c): { ", grammar[i][0]);
+        for (
