@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char input[100], alpha[50], beta1[50], beta2[50];
+    char nonTerminal;
+
+    printf("Enter production (e.g., A->ab|ac): ");
+    scanf("%s", input);
+
+    nonTerminal = input[0];
+
+    // Split into two alternatives assuming the format A->ab|ac
+    int i = 3, j = 0;
+    while (input[i] != '|') {
+        beta1[j++] = input[i++];
+    }
+    beta1[j] = '\0';
+    i++; j = 0;
+
+    while (input[i] != '\0') {
+        beta2[j++] = input[i++];
+    }
+    beta2[j] = '\0';
+
+    // Find common prefix
+    int k = 0;
+    while (beta1[k] == beta2[k] && beta1[k] != '\0') {
+        alpha[k] = beta1[k];
+        k++;
+    }
+    alpha[k] = '\0';
+
+    if (strlen(alpha) == 0) {
+        printf("No left factoring needed.\n");
+    } else {
+        printf("Left factoring applied:\n");
+        printf("%c -> %s%c'\n", nonTerminal, alpha, nonTerminal);
+        printf("%c' -> %s | %s\n", nonTerminal, beta1 + k, beta2 + k);
+    }
+
+    return 0;
+}
