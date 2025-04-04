@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <string.h>
+
+char stack[100], input[100];
+int top = 0, i = 0;
+
+// Operator precedence table
+char precedence(char a, char b) {
+    if (a == '+' && b == '+') return '>';
+    if (a == '+' && b == '*') return '<';
+    if (a == '+' && b == 'i') return '<';
+    if (a == '+' && b == '(') return '<';
+    if (a == '+' && b == ')') return '>';
+    if (a == '+' && b == '$') return '>';
+
+    if (a == '*' && b == '+') return '>';
+    if (a == '*' && b == '*') return '>';
+    if (a == '*' && b == 'i') return '<';
+    if (a == '*' && b == '(') return '<';
+    if (a == '*' && b == ')') return '>';
+    if (a == '*' && b == '$') return '>';
+
+    if (a == 'i' && b == '+' || a == 'i' && b == '*' ||
+        a == 'i' && b == ')' || a == 'i' && b == '$') return '>';
+
+    if (a == '(' && b == '+' || a == '(' && b == '*' ||
+        a == '(' && b == 'i' || a == '(' && b == '(') return '<';
+
+    if (a == '(' && b == ')') return '=';
+
+    if (a == ')' && b == '+' || a == ')' && b == '*' ||
+        a == ')' && b == ')' || a == ')' && b == '$') return '>';
+
+    if (a == '$' && b == '+' || a == '$' && b == '*' ||
+        a == '$' && b == 'i' || a == '$' && b == '(') return '<';
+
+    if (a == '$' && b == '$') return 'A'; // accept
+
+    return 'e'; // error
+}
+
+void display(char action[]) {
+    printf("STACK: %-20s INPUT: %-10s ACTION: %s\n", stack, input + i, action);
+}
+
+void parse() {
+    char a, b, relation;
+    stack[top] = '$';
+    stack[top + 1] = '\0';
+
+    display("Initialize");
+
+    while (1) {
+        a = stack[top];
+
+        b = input[i];
+
+        relation = precedence(a, b);
+
+        if (relation == '<' || relation == '=') {
+            stack[++top] = input[i++];
+            stack[top + 1] = '\0';
+            display("Shift");
+        }
+        else if (relation == '>') {
+            // Reduce: Replace 'i' or E+E, E*E, (E) with 'E'
+            if (stack[top] == 'i') {
+                stack[top] = 'E';
+                display("Reduce: i → E");
+            }
+            else if (top >= 2 && stack[top - 2] == 'E' &&
+                     (stack[top - 1] == '+' || stack[top - 1] == '*') &&
+                     stack[top] == 'E') {
+                stack[top - 2] = 'E';
+                top -= 2;
+                stack[top + 1] = '\0';
+                display("Reduce: E op E → E");
+            }
+            else if (top >= 2 && stack[top - 2] == '(' && stack[top - 1] == 'E' && stack[top] == ')') {
+                stack[top - 2] = 'E';
+                top -= 2;
+                stack[top + 1] = '\0';
+                display("Reduce: (E) → E");
+            }
+            else {
+                display("Error: Invalid Reduction");
+                break;
+            }
+        }
+        else if (relation == 'A') {
+            if (stack[top] == 'E' && stack[top - 1] == '$' && input[i] == '$') {
+                display("✅ Accepted");
+            } else {
+                display("❌ Rejected");
+            }
+            break;
+        }
+        else {
+            display("❌ Error");
+            break;
+        }
+    }
+}
+
+int main() {
+    printf("Enter input string (use 'i' for id, and end with $): ");
+    scanf("%s", input);
+
+    parse();
+    return 0;
+}
