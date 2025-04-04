@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <string.h>
+
+void generateAssembly(char result[], char op1[], char operator, char op2[]) {
+    printf("MOV R1, %s\n", op1);
+    
+    switch (operator) {
+        case '+': printf("ADD R1, %s\n", op2); break;
+        case '-': printf("SUB R1, %s\n", op2); break;
+        case '*': printf("MUL R1, %s\n", op2); break;
+        case '/': printf("DIV R1, %s\n", op2); break;
+    }
+    
+    printf("MOV %s, R1\n\n", result);
+}
+
+int main() {
+    int n;
+    char line[100];
+    char result[10], op1[10], op2[10], operator;
+
+    printf("Enter number of 3-address code lines: ");
+    scanf("%d", &n);
+    getchar(); // consume newline
+
+    printf("\nEnter 3-address code lines (e.g., t1 = a + b):\n");
+
+    for (int i = 0; i < n; i++) {
+        fgets(line, sizeof(line), stdin);
+        sscanf(line, "%s = %s %c %s", result, op1, &operator, op2);
+        generateAssembly(result, op1, operator, op2);
+    }
+
+    return 0;
+}
