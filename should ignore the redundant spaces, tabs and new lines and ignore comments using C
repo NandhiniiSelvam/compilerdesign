@@ -1,0 +1,34 @@
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int main() {
+    char c, prev = 0;
+    int inComment = 0;
+
+    printf("Enter code (end with ~):\n");
+
+    while ((c = getchar()) != '~') {
+        if (inComment == 0 && c == '/' && prev == '/') {
+            inComment = 1; // Single-line comment
+        } else if (inComment == 0 && prev == '/' && c == '*') {
+            inComment = 2; // Multi-line comment
+        } else if (inComment == 1 && c == '\n') {
+            inComment = 0; // End of single-line comment
+        } else if (inComment == 2 && prev == '*' && c == '/') {
+            inComment = 0; // End of multi-line comment
+            prev = 0;
+            continue;
+        }
+
+        if (inComment || c == '\t' || (isspace(c) && prev == ' '))
+            ; // Skip
+        else if (!isspace(c) || prev != ' ')
+            putchar(c);
+
+        prev = c;
+    }
+
+    return 0;
+}
